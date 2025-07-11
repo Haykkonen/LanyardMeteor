@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "lanyard",
+  "version": "${version}",
+  "name": "Lanyard",
+  "description": "",
+  "authors": [
+    "CeCeloz_"
+  ],
+  "icon": "assets/template/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "meteor": [
+      "com.haykkonen.lanyard.Lanyard"
+    ]
+  },
+  "mixins": [
+    "lanyard.mixins.json"
+  ],
+  "custom": {
+    "meteor-client:color": "225,25,25"
+  },
+  "depends": {
+    "java": ">=21",
+    "minecraft": ["${mc_version}"],
+    "meteor-client": "*"
+  }
+}
