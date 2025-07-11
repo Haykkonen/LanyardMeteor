@@ -48,9 +48,9 @@ public abstract class ChatHelperScreenMixin extends Screen {
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void onKeyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         ChatHelper module = Modules.get().get(ChatHelper.class);
-        if (module == null || !module.isActive() || lanyard$chatHelperTextField == null || !lanyard$chatHelperTextField.isFocused()) {
-            return;
-        }
+        if (module == null || !module.isActive() || lanyard$chatHelperTextField == null || !lanyard$chatHelperTextField.isFocused()) return;
+
+        if (keyCode == GLFW.GLFW_KEY_E && lanyard$chatHelperTextField.isFocused()) cir.setReturnValue(true);
 
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             module.sendCommand(lanyard$chatHelperTextField.getText());
