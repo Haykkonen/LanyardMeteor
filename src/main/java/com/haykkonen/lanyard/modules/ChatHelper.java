@@ -37,6 +37,10 @@ public class ChatHelper extends Module {
     public void sendCommand(String command) {
         if (command == null || command.trim().isEmpty() || mc.player == null) return;
 
-        mc.player.networkHandler.sendChatMessage(command);
+        if (command.startsWith("/")) {
+            mc.player.networkHandler.sendChatCommand(command.substring(1));
+        } else {
+            mc.player.networkHandler.sendChatMessage(command);
+        }
     }
 }
