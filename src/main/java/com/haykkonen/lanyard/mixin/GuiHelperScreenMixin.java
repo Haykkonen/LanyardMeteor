@@ -25,14 +25,12 @@ public abstract class GuiHelperScreenMixin {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo callbackInfo) {
-        if (!((Object) this instanceof GenericContainerScreen)) return;
+        if (!((Object) this instanceof GenericContainerScreen screen)) return;
 
         GuiHelper module = Modules.get().get(GuiHelper.class);
 
         if (module == null || !module.isActive()) return;
         if (mc.player == null || mc.world == null) return;
-
-        HandledScreen<?> screen = (HandledScreen<?>) (Object) this;
 
         int guiX = this.getX();
         int guiY = this.getY();
