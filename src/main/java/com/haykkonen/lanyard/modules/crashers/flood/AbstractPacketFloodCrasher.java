@@ -8,11 +8,12 @@ import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 
 import java.util.function.Supplier;
 
-public abstract class AbstractPacketFloodCrasher extends Module {
+public abstract class AbstractPacketFloodCrasher<T extends ServerPlayPacketListener>  extends Module {
 
     protected static final String SPAM_CHAR_ZWJ = "\u200d";
 
@@ -27,7 +28,7 @@ public abstract class AbstractPacketFloodCrasher extends Module {
         .build()
     );
 
-    public AbstractPacketFloodCrasher(Category category, String name, String description) {
+    protected AbstractPacketFloodCrasher(Category category, String name, String description) {
         super(category, name, description);
     }
 
@@ -40,7 +41,7 @@ public abstract class AbstractPacketFloodCrasher extends Module {
     private void onTick(TickEvent.Post event) {
         if (mc.player == null || mc.getNetworkHandler() == null) return;
 
-        Supplier<Packet<?>> packetSupplier = createPacketSupplier();
+        Supplier<Packet<T>> packetSupplier = createPacketSupplier();
         if (packetSupplier == null) return;
 
         final int packetAmount = amount.get();
@@ -50,5 +51,5 @@ public abstract class AbstractPacketFloodCrasher extends Module {
         }
     }
 
-    protected abstract Supplier<Packet<?>> createPacketSupplier();
+    protected abstract Supplier<Packet<T>> createPacketSupplier();
 }

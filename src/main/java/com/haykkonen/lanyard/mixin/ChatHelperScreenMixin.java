@@ -24,7 +24,7 @@ public abstract class ChatHelperScreenMixin extends Screen {
     protected int y;
 
     @Unique
-    private TextFieldWidget lanyard$chatHelperTextField;
+    private TextFieldWidget textFieldWidget;
 
     protected ChatHelperScreenMixin(Text title) {
         super(title);
@@ -39,28 +39,30 @@ public abstract class ChatHelperScreenMixin extends Screen {
         int pX = this.x + module.xOffset.get();
         int pY = this.y + module.yOffset.get();
 
-        lanyard$chatHelperTextField = new TextFieldWidget(this.textRenderer, pX, pY, w, 20, Text.literal(""));
-        lanyard$chatHelperTextField.setPlaceholder(Text.literal("Message..."));
+        textFieldWidget = new TextFieldWidget(this.textRenderer, pX, pY, w, 20, Text.literal(""));
+        textFieldWidget.setPlaceholder(Text.literal("Message..."));
 
-        addDrawableChild(lanyard$chatHelperTextField);
+        textFieldWidget.setMaxLength(256);
+
+        addDrawableChild(textFieldWidget);
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void onKeyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+    private void onKeyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         ChatHelper module = Modules.get().get(ChatHelper.class);
-        if (module == null || !module.isActive() || lanyard$chatHelperTextField == null || !lanyard$chatHelperTextField.isFocused()) return;
+        if (module == null || !module.isActive() || textFieldWidget == null || !textFieldWidget.isFocused()) return;
 
-        if (keyCode == GLFW.GLFW_KEY_E && lanyard$chatHelperTextField.isFocused()) cir.setReturnValue(true);
+        if (keyCode == GLFW.GLFW_KEY_E && textFieldWidget.isFocused()) callbackInfoReturnable.setReturnValue(true);
 
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            module.sendCommand(lanyard$chatHelperTextField.getText());
-            lanyard$chatHelperTextField.setText("");
-            cir.setReturnValue(true);
+            module.sendCommand(textFieldWidget.getText());
+            textFieldWidget.setText("");
+            callbackInfoReturnable.setReturnValue(true);
         }
     }
 
     @Inject(method = "removed", at = @At("TAIL"))
-    private void onRemoved(CallbackInfo ci) {
-        lanyard$chatHelperTextField = null;
+    private void onRemoved(CallbackInfo callbackInfo) {
+        textFieldWidget = null;
     }
 }

@@ -1,13 +1,12 @@
 package com.haykkonen.lanyard;
 
-import com.haykkonen.lanyard.commands.CommandExample;
 import com.haykkonen.lanyard.modules.ChatHelper;
+import com.haykkonen.lanyard.modules.GuiHelper;
 import com.haykkonen.lanyard.modules.PacketDelay;
 import com.haykkonen.lanyard.modules.PacketLogger;
 import com.haykkonen.lanyard.modules.crashers.flood.CommandFloodCrash;
 import com.haykkonen.lanyard.modules.crashers.flood.VelocityCrash;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
-import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 
@@ -18,17 +17,12 @@ public class Lanyard extends MeteorAddon {
 
     @Override
     public void onInitialize() {
-
-
-        // Modules
         Modules.get().add(new PacketDelay());
         Modules.get().add(new VelocityCrash());
         Modules.get().add(new CommandFloodCrash());
         Modules.get().add(new PacketLogger());
         Modules.get().add(new ChatHelper());
-
-        // Commands
-        Commands.add(new CommandExample());
+        Modules.get().add(new GuiHelper());
     }
 
     @Override
