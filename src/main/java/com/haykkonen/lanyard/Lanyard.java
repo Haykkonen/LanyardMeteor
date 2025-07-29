@@ -1,6 +1,5 @@
 package com.haykkonen.lanyard;
 
-import com.haykkonen.lanyard.modules.ChatHelper;
 import com.haykkonen.lanyard.modules.GuiHelper;
 import com.haykkonen.lanyard.modules.PacketDelay;
 import com.haykkonen.lanyard.modules.PacketLogger;
@@ -21,7 +20,6 @@ public class Lanyard extends MeteorAddon {
         Modules.get().add(new VelocityCrash());
         Modules.get().add(new CommandFloodCrash());
         Modules.get().add(new PacketLogger());
-        Modules.get().add(new ChatHelper());
         Modules.get().add(new GuiHelper());
     }
 

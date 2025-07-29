@@ -3,7 +3,6 @@
   "package": "com.haykkonen.lanyard.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "ChatHelperScreenMixin",
     "GuiHelperScreenMixin"
   ],
   "injectors": {
