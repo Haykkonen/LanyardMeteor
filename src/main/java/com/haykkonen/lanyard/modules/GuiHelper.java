@@ -42,6 +42,12 @@ public class GuiHelper extends Module {
         .defaultValue(true)
         .build());
 
+    public final Setting<Boolean> delayUIPackets = sgStateTools.add(new BoolSetting.Builder()
+        .name("delay-packets")
+        .description("Show a button to delay sending UI packets.")
+        .defaultValue(true)
+        .build());
+
     public final Setting<Boolean> enableChatBox = sgChatBox.add(new BoolSetting.Builder()
         .name("enable-chat-box")
         .description("Adds a command input text box to inventory screens.")

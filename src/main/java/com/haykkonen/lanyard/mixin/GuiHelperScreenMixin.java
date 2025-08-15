@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -19,11 +20,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.haykkonen.lanyard.LanyardSharedData.delayedUIPackets;
+import static com.haykkonen.lanyard.LanyardSharedData.isPacketDelayActive;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Mixin(HandledScreen.class)
 public abstract class GuiHelperScreenMixin extends Screen {
-
     @Shadow
     protected int x;
     @Shadow
@@ -37,7 +42,7 @@ public abstract class GuiHelperScreenMixin extends Screen {
     }
 
     @Inject(method = "render", at = @At("TAIL"))
-    private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo callbackInfo) {
         if (!((Object) this instanceof GenericContainerScreen screen)) return;
 
         GuiHelper module = Modules.get().get(GuiHelper.class);
@@ -64,7 +69,7 @@ public abstract class GuiHelperScreenMixin extends Screen {
     @Inject(method = "init", at = @At("TAIL"))
     private void onInit(CallbackInfo callbackInfo) {
         GuiHelper module = Modules.get().get(GuiHelper.class);
-        if (module == null || !module.isActive()) return;
+        if (!module.isActive()) return;
 
         int buttonWidth = 115;
         int buttonHeight = 20;
@@ -72,12 +77,35 @@ public abstract class GuiHelperScreenMixin extends Screen {
         int yPos = 5;
 
         if (Boolean.TRUE.equals(module.saveGuiButton.get())) {
-            this.addDrawableChild(ButtonWidget.builder(Text.of("Save GUI"), button -> module.storeCurrentGui()).dimensions(xPos, yPos, buttonWidth, buttonHeight).build());
+            this.addDrawableChild(ButtonWidget.builder(Text.of("Save GUI"), button -> module.storeCurrentGui())
+                .dimensions(xPos, yPos, buttonWidth, buttonHeight).build());
             yPos += buttonHeight + 2;
         }
 
         if (Boolean.TRUE.equals(module.closeWithoutPacketButton.get())) {
-            this.addDrawableChild(ButtonWidget.builder(Text.of("Close without packet"), button -> mc.setScreen(null)).dimensions(xPos, yPos, buttonWidth, buttonHeight).build());
+            this.addDrawableChild(ButtonWidget.builder(Text.of("Close without packet"), button -> mc.setScreen(null))
+                .dimensions(xPos, yPos, buttonWidth, buttonHeight).build());
+            yPos += buttonHeight + 2;
+        }
+
+        if (Boolean.TRUE.equals(module.delayUIPackets.get())) {
+            Text buttonText = Text.of("Delay packets: " + (isPacketDelayActive ? "ON" : "OFF"));
+
+            addDrawableChild(ButtonWidget.builder(buttonText, button -> {
+                isPacketDelayActive = !isPacketDelayActive;
+                button.setMessage(Text.of("Delay packets: " + (isPacketDelayActive ? "ON" : "OFF")));
+
+                if (!isPacketDelayActive && !delayedUIPackets.isEmpty() && mc.getNetworkHandler() != null) {
+                    List<Packet<?>> packetsToSend = new ArrayList<>(delayedUIPackets);
+
+                    delayedUIPackets.clear();
+
+                    packetsToSend.forEach(packet -> mc.getNetworkHandler().sendPacket(packet));
+
+                    if (mc.player != null)
+                        mc.player.sendMessage(Text.of("Sent " + packetsToSend.size() + " packets."), false);
+                }
+            }).dimensions(xPos, yPos, buttonWidth, buttonHeight).build());
         }
 
         if (Boolean.TRUE.equals(module.enableChatBox.get())) {
@@ -111,9 +139,7 @@ public abstract class GuiHelperScreenMixin extends Screen {
     }
 
     @Inject(method = "removed", at = @At("TAIL"))
-    private void onRemoved(CallbackInfo ci) {
-        if (lanyardTextFieldWidget != null) {
-            lanyardTextFieldWidget = null;
-        }
+    private void onRemoved(CallbackInfo callbackInfo) {
+        lanyardTextFieldWidget = null;
     }
 }

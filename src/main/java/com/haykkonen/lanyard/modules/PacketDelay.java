@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.network.PacketUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.network.packet.Packet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -43,8 +44,8 @@ public class PacketDelay extends Module {
     }
 
 
-    @EventHandler(priority = 201)
-    private void onSendPacket(PacketEvent.Send event) {
+    @EventHandler
+    private void onSendPacket(@NotNull PacketEvent.Send event) {
         if (packetsToDelay.get().contains(event.packet.getClass())) {
             delayedPacketQueue.add(event.packet);
 

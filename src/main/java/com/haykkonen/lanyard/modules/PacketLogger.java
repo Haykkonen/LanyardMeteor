@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.network.PacketUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.network.packet.Packet;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.Set;
@@ -42,21 +43,21 @@ public class PacketLogger extends Module {
     }
 
     @EventHandler
-    private void onPacketSend(PacketEvent.Send event) {
+    private void onPacketSend(@NotNull PacketEvent.Send event) {
         if (clientPacketsToLog.get().contains(event.packet.getClass())) {
             logPacketDetails(event.packet, "Sending");
         }
     }
 
     @EventHandler
-    private void onPacketReceive(PacketEvent.Receive event) {
+    private void onPacketReceive(@NotNull PacketEvent.Receive event) {
         if (serverPacketsToLog.get().contains(event.packet.getClass())) {
             logPacketDetails(event.packet, "Receiving");
         }
     }
 
 
-    private void logPacketDetails(Packet<?> packet, String direction) {
+    private void logPacketDetails(@NotNull Packet<?> packet, String direction) {
         LOGGER.log(Level.INFO, "{0} packet: {1}", new Object[]{direction, packet.getClass().getSimpleName()});
 
         Class<?> currentClass = packet.getClass();
