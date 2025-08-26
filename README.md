@@ -25,7 +25,7 @@ These modules are designed for penetration testing and assessing server resilien
 
 1.  **Prerequisite**: You must have [Meteor Client](https://meteorclient.com/) installed.
 2.  Download the latest release of Lanyard (`.jar`) from the [Releases page](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/releases).
-3.  Place the `.jar` file into the `addons` folder inside your Meteor Client directory (`.minecraft/meteor-client/addons`).
+3.  Place the `.jar` file into the `mods` folder inside your Minecraft mods directory (`.minecraft/mods`).
 4.  Launch Minecraft. The addon will be loaded automatically.
 
 ## ⚠️ Disclaimer & Ethical Use
