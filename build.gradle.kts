@@ -1,67 +1,54 @@
 plugins {
-    id("fabric-loom") version "1.11-SNAPSHOT"
+    alias(libs.plugins.fabric.loom)
 }
 
 base {
-    archivesName = properties["archives_base_name"] as String
-    version = properties["mod_version"] as String
-    group = properties["maven_group"] as String
+    archivesName.set(project.property("archives_name") as String)
+    version = project.property("mod_version") as String
+    group = project.property("maven_group") as String
 }
 
 repositories {
-    maven {
-        name = "meteor-maven"
-        url = uri("https://maven.meteordev.org/releases")
-    }
-    maven {
-        name = "meteor-maven-snapshots"
-        url = uri("https://maven.meteordev.org/snapshots")
-    }
+    maven("https://maven.meteordev.org/releases") { name = "Meteor Releases" }
+    maven("https://maven.meteordev.org/snapshots") { name = "Meteor Snapshots" }
 }
 
 dependencies {
-    // Fabric
-    minecraft("com.mojang:minecraft:${properties["minecraft_version"] as String}")
-    mappings("net.fabricmc:yarn:${properties["yarn_mappings"] as String}:v2")
-    modImplementation("net.fabricmc:fabric-loader:${properties["loader_version"] as String}")
-
-    // Meteor
-    modImplementation("meteordevelopment:meteor-client:${properties["minecraft_version"] as String}-SNAPSHOT")
+    minecraft(libs.minecraft.mojang)
+    mappings(libs.yarn.mappings)
+    modImplementation(libs.fabric.loader)
+    modImplementation("meteordevelopment:meteor-client:${libs.versions.minecraft.get()}-SNAPSHOT")
 }
 
 tasks {
     processResources {
-        val propertyMap = mapOf(
+        val properties = mapOf(
             "version" to project.version,
-            "mc_version" to project.property("minecraft_version"),
+            "mc_version" to libs.versions.minecraft.get(),
+            "mod_id" to project.property("mod_id")
         )
-
-        inputs.properties(propertyMap)
-
-        filteringCharset = "UTF-8"
-
+        inputs.properties(properties)
         filesMatching("fabric.mod.json") {
-            expand(propertyMap)
+            expand(properties)
         }
     }
 
     jar {
-        inputs.property("archivesName", project.base.archivesName.get())
-
+        val finalArchivesName = base.archivesName.get()
         from("LICENSE") {
-            rename { "${it}_${inputs.properties["archivesName"]}" }
+            rename { "${it}_$finalArchivesName" }
         }
     }
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
     }
 
     withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.release = 21
-        options.compilerArgs.add("-Xlint:deprecation")
-        options.compilerArgs.add("-Xlint:unchecked")
+        options.release.set(21)
+        options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:unchecked"))
     }
 }

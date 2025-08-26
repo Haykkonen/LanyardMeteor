@@ -10,12 +10,12 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-public abstract class AbstractPacketFloodCrasher<T extends ServerPlayPacketListener>  extends Module {
-
-    protected static final String SPAM_CHAR_ZWJ = "\u200d";
+public abstract class AbstractPacketFloodCrasher<T extends ServerPlayPacketListener> extends Module {
 
     protected final SettingGroup sgGeneral = settings.getDefaultGroup();
 
@@ -28,28 +28,37 @@ public abstract class AbstractPacketFloodCrasher<T extends ServerPlayPacketListe
         .build()
     );
 
-    protected AbstractPacketFloodCrasher(Category category, String name, String description) {
+    protected AbstractPacketFloodCrasher(@NotNull Category category, @NotNull String name, @NotNull String description) {
         super(category, name, description);
     }
 
     @EventHandler
-    private void onGameLeft(GameLeftEvent event) {
-        if (isActive()) toggle();
+    private void onGameLeft(@NotNull GameLeftEvent event) {
+        if (isActive()) {
+            toggle();
+        }
     }
 
     @EventHandler
-    private void onTick(TickEvent.Post event) {
-        if (mc.player == null || mc.getNetworkHandler() == null) return;
+    private void onTick(@NotNull TickEvent.Post event) {
+        if (mc.player == null || mc.getNetworkHandler() == null) {
+            return;
+        }
 
         Supplier<Packet<T>> packetSupplier = createPacketSupplier();
-        if (packetSupplier == null) return;
+        if (packetSupplier == null) {
+            return;
+        }
 
         final int packetAmount = amount.get();
         for (int i = 0; i < packetAmount; i++) {
             Packet<?> packet = packetSupplier.get();
-            if (packet != null) mc.getNetworkHandler().sendPacket(packet);
+            if (packet != null) {
+                mc.getNetworkHandler().sendPacket(packet);
+            }
         }
     }
 
+    @Nullable
     protected abstract Supplier<Packet<T>> createPacketSupplier();
 }

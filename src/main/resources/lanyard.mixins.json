@@ -3,8 +3,8 @@
   "package": "com.haykkonen.lanyard.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "GuiHelperConnectionMixin",
-    "GuiHelperScreenMixin"
+    "guihelper.GuiHelperConnectionMixin",
+    "guihelper.GuiHelperScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

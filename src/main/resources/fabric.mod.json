@@ -3,11 +3,16 @@
   "id": "lanyard",
   "version": "${version}",
   "name": "Lanyard",
-  "description": "",
+  "description": "A Meteor Client addon for network analysis, development, and utilities.",
   "authors": [
-    "CeCeloz_"
+    "Haykkonen"
   ],
-  "icon": "assets/template/icon.png",
+  "contact": {
+    "homepage": "https://github.com/haykkonen/lanyard",
+    "sources": "https://github.com/haykkonen/lanyard"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/lanyard/icon.png",
   "environment": "client",
   "entrypoints": {
     "meteor": [

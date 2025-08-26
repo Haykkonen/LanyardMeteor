@@ -4,12 +4,13 @@ import com.haykkonen.lanyard.Lanyard;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.misc.Keybind;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.screen.ScreenHandler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 public class GuiHelper extends Module {
@@ -48,6 +49,13 @@ public class GuiHelper extends Module {
         .defaultValue(true)
         .build());
 
+    public final Setting<Keybind> restoreGuiKeybind = sgStateTools.add(new KeybindSetting.Builder()
+        .name("restore-gui-keybind")
+        .description("Restores the last saved GUI state.")
+        .defaultValue(Keybind.fromKey(GLFW.GLFW_KEY_V))
+        .build()
+    );
+
     public final Setting<Boolean> enableChatBox = sgChatBox.add(new BoolSetting.Builder()
         .name("enable-chat-box")
         .description("Adds a command input text box to inventory screens.")
@@ -78,23 +86,15 @@ public class GuiHelper extends Module {
         .build()
     );
 
-    private Screen storedScreen = null;
-    private ScreenHandler storedScreenHandler = null;
-    private final KeyBinding restoreScreenKey;
+    @Nullable private Screen storedScreen;
+    @Nullable private ScreenHandler storedScreenHandler;
 
     public GuiHelper() {
-        super(Lanyard.CATEGORY_UTILS, "Gui Helper", "A collection of GUI-related utilities.");
-
-        this.restoreScreenKey = new KeyBinding(
-            "key.lanyard.restore-gui",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_V,
-            "Lanyard Utils"
-        );
+        super(Lanyard.LANYARD_UTILS_CATEGORY, "Gui Helper", "A collection of GUI-related utilities.");
     }
 
-    public void sendCommand(String command) {
-        if (command == null || command.trim().isEmpty() || mc.player == null) return;
+    public void sendCommand(@NotNull String command) {
+        if (command.trim().isEmpty() || mc.player == null || mc.player.networkHandler == null) return;
 
         if (command.startsWith("/")) {
             mc.player.networkHandler.sendChatCommand(command.substring(1));
@@ -111,12 +111,14 @@ public class GuiHelper extends Module {
     }
 
     @EventHandler
-    private void onTick(TickEvent.Post event) {
-        if (restoreScreenKey.wasPressed()) restoreSavedGui();
+    private void onTick(@NotNull TickEvent.Post event) {
+        if (restoreGuiKeybind.get().isPressed()) {
+            restoreSavedGui();
+        }
     }
 
     private void restoreSavedGui() {
-        if (this.storedScreen != null && this.storedScreenHandler != null && mc.player != null) {
+        if (this.storedScreen != null && this.storedScreenHandler != null && mc.world != null && mc.player != null) {
             mc.setScreen(this.storedScreen);
             mc.player.currentScreenHandler = this.storedScreenHandler;
 

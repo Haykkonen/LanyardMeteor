@@ -13,32 +13,27 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 public class PacketLogger extends Module {
-
-    private static final Logger LOGGER = Logger.getLogger(PacketLogger.class.getName());
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
     private final Setting<Set<Class<? extends Packet<?>>>> clientPacketsToLog = sgGeneral.add(new PacketListSetting.Builder()
-        .name("c2s-packets")
+        .name("client-packets")
         .description("Packets from client to server (C2S) to log.")
         .filter(PacketUtils.getC2SPackets()::contains)
         .build()
     );
 
     private final Setting<Set<Class<? extends Packet<?>>>> serverPacketsToLog = sgGeneral.add(new PacketListSetting.Builder()
-        .name("s2c-packets")
+        .name("server-packets")
         .description("Packets from server to client (S2C) to log.")
         .filter(PacketUtils.getS2CPackets()::contains)
         .build()
     );
 
     public PacketLogger() {
-        super(Lanyard.CATEGORY_UTILS, "PacketLogger", "Logs specified packets sent and received by the client.");
+        super(Lanyard.LANYARD_UTILS_CATEGORY, "PacketLogger", "Logs specified packets sent and received by the client.");
         this.runInMainMenu = true;
     }
 
@@ -56,23 +51,24 @@ public class PacketLogger extends Module {
         }
     }
 
-
-    private void logPacketDetails(@NotNull Packet<?> packet, String direction) {
-        LOGGER.log(Level.INFO, "{0} packet: {1}", new Object[]{direction, packet.getClass().getSimpleName()});
+    private void logPacketDetails(@NotNull Packet<?> packet, @NotNull String direction) {
+        StringBuilder logMessage = new StringBuilder();
+        logMessage.append(String.format("%s packet: %s%n", direction, packet.getClass().getSimpleName()));
 
         Class<?> currentClass = packet.getClass();
-
         while (currentClass != null && Packet.class.isAssignableFrom(currentClass)) {
             for (Field field : currentClass.getDeclaredFields()) {
                 try {
                     field.setAccessible(true);
                     Object value = field.get(packet);
-                    LOGGER.log(Level.FINE, "  -> Key: {0}, Value: {1}", new Object[]{field.getName(), value});
+                    logMessage.append(String.format("  -> %s: %s%n", field.getName(), value));
                 } catch (IllegalAccessException e) {
-                    LOGGER.log(Level.WARNING, "Failed to access field: {0} ", new Object[]{field.getName()});
+                    warning("Failed to access field: %s", field.getName());
                 }
             }
             currentClass = currentClass.getSuperclass();
         }
+
+        info(logMessage.toString());
     }
 }
