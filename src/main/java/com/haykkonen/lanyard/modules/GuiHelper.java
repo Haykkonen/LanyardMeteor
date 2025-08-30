@@ -25,6 +25,12 @@ public class GuiHelper extends Module {
         .defaultValue(false)
         .build());
 
+    public final Setting<Boolean> showSyncInfo = sgVisuals.add(new BoolSetting.Builder()
+        .name("show-sync-info")
+        .description("Shows information about the current GUI sync status.")
+        .defaultValue(false)
+        .build());
+
     public final Setting<SettingColor> textColor = sgVisuals.add(new ColorSetting.Builder()
         .name("text-color")
         .description("The color of the slot index text.")

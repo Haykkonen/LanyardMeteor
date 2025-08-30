@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,34 +44,48 @@ public abstract class GuiHelperScreenMixin extends Screen {
     @Unique private static final int WIDGET_Y_POS = 5;
     @Unique private static final int WIDGET_SPACING = 2;
 
+    @Unique private boolean shouldRenderSyncInfo = false;
+    @Unique private String syncIdTextToRender = "";
+    @Unique private String revisionTextToRender = "";
+
     protected GuiHelperScreenMixin(Text title) {
         super(title);
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (!((Object) this instanceof GenericContainerScreen screen)) return;
-
         GuiHelper module = Modules.get().get(GuiHelper.class);
-        if (module == null || !module.isActive() || !Boolean.TRUE.equals(module.showSlotIndex.get()) || mc.player == null) {
-            return;
+        if (module == null || !module.isActive() || mc.player == null) return;
+
+        if (Boolean.TRUE.equals(module.showSlotIndex.get()) && (Object) this instanceof GenericContainerScreen screen) {
+            for (Slot slot : screen.getScreenHandler().slots) {
+                if (slot.inventory == mc.player.getInventory()) continue;
+
+                String text = String.valueOf(slot.getIndex());
+                double textWidth = mc.textRenderer.getWidth(text);
+                int textX = this.x + slot.x + (int) ((16 - textWidth) / 2.0);
+                int textY = this.y + slot.y + (int) ((16 - mc.textRenderer.fontHeight) / 2.0) + 1;
+
+                context.drawTextWithShadow(mc.textRenderer, text, textX, textY, module.textColor.get().getPacked());
+            }
         }
 
-        for (Slot slot : screen.getScreenHandler().slots) {
-            if (slot.inventory == mc.player.getInventory()) continue;
+        if (this.shouldRenderSyncInfo) {
+            int textX = this.x + module.xOffset.get() - 80;
+            int textY = this.y + module.yOffset.get();
+            int grayColor = Color.GRAY.getRGB();
 
-            String text = String.valueOf(slot.getIndex());
-            double textWidth = mc.textRenderer.getWidth(text);
-            int textX = this.x + slot.x + (int) ((16 - textWidth) / 2.0);
-            int textY = this.y + slot.y + (int) ((16 - mc.textRenderer.fontHeight) / 2.0) + 1;
-
-            context.drawTextWithShadow(mc.textRenderer, text, textX, textY, module.textColor.get().getPacked());
+            context.drawTextWithShadow(mc.textRenderer, this.syncIdTextToRender, textX, textY, grayColor);
+            context.drawTextWithShadow(mc.textRenderer, this.revisionTextToRender, textX, textY + 10, grayColor);
         }
     }
 
     @Inject(method = "init", at = @At("TAIL"))
     private void onInit(CallbackInfo ci) {
-        if ((Object) this instanceof CreativeInventoryScreen) return;
+        if ((Object) this instanceof CreativeInventoryScreen) {
+            this.shouldRenderSyncInfo = false;
+            return;
+        }
 
         GuiHelper module = Modules.get().get(GuiHelper.class);
         if (module == null || !module.isActive()) return;
@@ -80,6 +95,7 @@ public abstract class GuiHelperScreenMixin extends Screen {
         currentY = initCloseButton(module, currentY);
         initPacketDelayButton(module, currentY);
         initChatBox(module);
+        initSyncTexts(module);
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
@@ -148,6 +164,16 @@ public abstract class GuiHelperScreenMixin extends Screen {
             lanyardTextFieldWidget.setPlaceholder(Text.literal("Message..."));
             lanyardTextFieldWidget.setMaxLength(256);
             addDrawableChild(lanyardTextFieldWidget);
+        }
+    }
+
+    @Unique
+    private void initSyncTexts(@NotNull GuiHelper module) {
+        this.shouldRenderSyncInfo = Boolean.TRUE.equals(module.showSyncInfo.get());
+
+        if (this.shouldRenderSyncInfo && mc.player != null) {
+            this.syncIdTextToRender = "SYNC ID: " + mc.player.currentScreenHandler.syncId;
+            this.revisionTextToRender = "Revision id: " + mc.player.currentScreenHandler.getRevision();
         }
     }
 
