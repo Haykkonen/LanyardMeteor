@@ -1,33 +1,50 @@
-# gradle
-
+# Gradle
 .gradle/
 build/
 out/
-classes/
 
-# eclipse
+# Evita ignorar o Gradle Wrapper, o que é uma boa prática
+!gradle/wrapper/gradle-wrapper.jar
 
+# Arquivos de log de crash da JVM
+hs_err_pid*
+replay_pid*
+
+# Eclipse
+.metadata/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.project
+.classpath
+.factorypath
 *.launch
 
-# idea
-
+# IntelliJ IDEA
 .idea/
 *.iml
 *.ipr
 *.iws
+/out/
 
-# vscode
-
-.settings/
+# VS Code
 .vscode/
-bin/
-.classpath
-.project
+*.code-workspace
 
-# macos
+# macOS
+.DS_Store
 
-*.DS_Store
-
-# fabric
-
+# Fabric
 run/
+
+# Arquivos de pacotes gerados (opcional, mas recomendado)
+*.jar
+*.war
+*.ear
+*.nar
