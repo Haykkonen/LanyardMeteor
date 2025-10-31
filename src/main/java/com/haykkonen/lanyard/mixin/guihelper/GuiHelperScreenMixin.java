@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
@@ -33,20 +34,31 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 @Mixin(HandledScreen.class)
 public abstract class GuiHelperScreenMixin extends Screen {
 
-    @Shadow protected int x;
-    @Shadow protected int y;
+    @Shadow
+    protected int x;
+    @Shadow
+    protected int y;
 
-    @Unique private TextFieldWidget lanyardTextFieldWidget;
+    @Unique
+    private TextFieldWidget lanyardTextFieldWidget;
 
-    @Unique private static final int BUTTON_WIDTH = 115;
-    @Unique private static final int BUTTON_HEIGHT = 20;
-    @Unique private static final int WIDGET_X_POS = 5;
-    @Unique private static final int WIDGET_Y_POS = 5;
-    @Unique private static final int WIDGET_SPACING = 2;
+    @Unique
+    private static final int BUTTON_WIDTH = 115;
+    @Unique
+    private static final int BUTTON_HEIGHT = 20;
+    @Unique
+    private static final int WIDGET_X_POS = 5;
+    @Unique
+    private static final int WIDGET_Y_POS = 5;
+    @Unique
+    private static final int WIDGET_SPACING = 2;
 
-    @Unique private boolean shouldRenderSyncInfo = false;
-    @Unique private String syncIdTextToRender = "";
-    @Unique private String revisionTextToRender = "";
+    @Unique
+    private boolean shouldRenderSyncInfo = false;
+    @Unique
+    private String syncIdTextToRender = "";
+    @Unique
+    private String revisionTextToRender = "";
 
     protected GuiHelperScreenMixin(Text title) {
         super(title);
@@ -99,13 +111,15 @@ public abstract class GuiHelperScreenMixin extends Screen {
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void onKeyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+    private void onKeyPressed(KeyInput keyInput, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof CreativeInventoryScreen) return;
 
         GuiHelper module = Modules.get().get(GuiHelper.class);
         if (module == null || !module.isActive() || !Boolean.TRUE.equals(module.enableChatBox.get()) || lanyardTextFieldWidget == null || !lanyardTextFieldWidget.isFocused()) {
             return;
         }
+
+        int keyCode = keyInput.getKeycode();
 
         if (keyCode == GLFW.GLFW_KEY_E) {
             cir.setReturnValue(true);
@@ -128,7 +142,7 @@ public abstract class GuiHelperScreenMixin extends Screen {
     private int initSaveButton(@NotNull GuiHelper module, int yPos) {
         if (Boolean.TRUE.equals(module.saveGuiButton.get())) {
             addDrawableChild(ButtonWidget.builder(Text.of("Save GUI"), button -> module.storeCurrentGui())
-                .dimensions(WIDGET_X_POS, yPos, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+                    .dimensions(WIDGET_X_POS, yPos, BUTTON_WIDTH, BUTTON_HEIGHT).build());
             return yPos + BUTTON_HEIGHT + WIDGET_SPACING;
         }
         return yPos;
@@ -138,7 +152,7 @@ public abstract class GuiHelperScreenMixin extends Screen {
     private int initCloseButton(@NotNull GuiHelper module, int yPos) {
         if (Boolean.TRUE.equals(module.closeWithoutPacketButton.get())) {
             addDrawableChild(ButtonWidget.builder(Text.of("Close without packet"), button -> mc.setScreen(null))
-                .dimensions(WIDGET_X_POS, yPos, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+                    .dimensions(WIDGET_X_POS, yPos, BUTTON_WIDTH, BUTTON_HEIGHT).build());
             return yPos + BUTTON_HEIGHT + WIDGET_SPACING;
         }
         return yPos;
@@ -149,7 +163,7 @@ public abstract class GuiHelperScreenMixin extends Screen {
         if (Boolean.TRUE.equals(module.delayUIPackets.get())) {
             Text buttonText = Text.of("Delay packets: " + (isPacketDelayActive ? "ON" : "OFF"));
             addDrawableChild(ButtonWidget.builder(buttonText, GuiHelperScreenMixin::togglePacketDelay)
-                .dimensions(WIDGET_X_POS, yPos, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+                    .dimensions(WIDGET_X_POS, yPos, BUTTON_WIDTH, BUTTON_HEIGHT).build());
         }
     }
 
