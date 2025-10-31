@@ -19,17 +19,17 @@ public class PacketLogger extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
     private final Setting<Set<Class<? extends Packet<?>>>> clientPacketsToLog = sgGeneral.add(new PacketListSetting.Builder()
-        .name("client-packets")
-        .description("Packets from client to server (C2S) to log.")
-        .filter(PacketUtils.getC2SPackets()::contains)
-        .build()
+            .name("client-packets")
+            .description("Packets from client to server (C2S) to log.")
+            .filter(PacketUtils.getC2SPackets()::contains)
+            .build()
     );
 
     private final Setting<Set<Class<? extends Packet<?>>>> serverPacketsToLog = sgGeneral.add(new PacketListSetting.Builder()
-        .name("server-packets")
-        .description("Packets from server to client (S2C) to log.")
-        .filter(PacketUtils.getS2CPackets()::contains)
-        .build()
+            .name("server-packets")
+            .description("Packets from server to client (S2C) to log.")
+            .filter(PacketUtils.getS2CPackets()::contains)
+            .build()
     );
 
     public PacketLogger() {

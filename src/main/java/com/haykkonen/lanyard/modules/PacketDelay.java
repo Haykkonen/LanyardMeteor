@@ -21,10 +21,10 @@ public class PacketDelay extends Module {
     private final Queue<Packet<?>> delayedPacketQueue = new LinkedList<>();
 
     private final Setting<Set<Class<? extends Packet<?>>>> packetsToDelay = sgGeneral.add(new PacketListSetting.Builder()
-        .name("c2s-packets-to-delay")
-        .description("Packets from client to server (C2S) to delay.")
-        .filter(PacketUtils.getC2SPackets()::contains)
-        .build()
+            .name("c2s-packets-to-delay")
+            .description("Packets from client to server (C2S) to delay.")
+            .filter(PacketUtils.getC2SPackets()::contains)
+            .build()
     );
 
     public PacketDelay() {

@@ -1,17 +1,17 @@
 package com.haykkonen.lanyard.modules.crashers.flood;
 
 import com.haykkonen.lanyard.Lanyard;
-import meteordevelopment.meteorclient.settings.StringSetting;
 import meteordevelopment.meteorclient.settings.Setting;
+import meteordevelopment.meteorclient.settings.StringSetting;
 import org.jetbrains.annotations.NotNull;
 
 public class CommandFloodCrasher extends AbstractCommandFloodCrasher {
 
     private final Setting<String> command = sgGeneral.add(new StringSetting.Builder()
-        .name("command")
-        .description("The command to spam.")
-        .defaultValue("skill")
-        .build()
+            .name("command")
+            .description("The command to spam.")
+            .defaultValue("skill")
+            .build()
     );
 
     public CommandFloodCrasher() {

@@ -20,80 +20,82 @@ public class GuiHelper extends Module {
     private final SettingGroup sgChatBox = settings.createGroup("Chat Box");
 
     public final Setting<Boolean> showSlotIndex = sgVisuals.add(new BoolSetting.Builder()
-        .name("show-slot-index")
-        .description("Shows the slot index numbers in the inventory GUI.")
-        .defaultValue(false)
-        .build());
+            .name("show-slot-index")
+            .description("Shows the slot index numbers in the inventory GUI.")
+            .defaultValue(false)
+            .build());
 
     public final Setting<Boolean> showSyncInfo = sgVisuals.add(new BoolSetting.Builder()
-        .name("show-sync-info")
-        .description("Shows information about the current GUI sync status.")
-        .defaultValue(false)
-        .build());
+            .name("show-sync-info")
+            .description("Shows information about the current GUI sync status.")
+            .defaultValue(false)
+            .build());
 
     public final Setting<SettingColor> textColor = sgVisuals.add(new ColorSetting.Builder()
-        .name("text-color")
-        .description("The color of the slot index text.")
-        .defaultValue(new SettingColor(255, 255, 255, 255))
-        .build());
+            .name("text-color")
+            .description("The color of the slot index text.")
+            .defaultValue(new SettingColor(255, 255, 255, 255))
+            .build());
 
     public final Setting<Boolean> saveGuiButton = sgStateTools.add(new BoolSetting.Builder()
-        .name("save-gui-button")
-        .description("Shows a button to save the current GUI state.")
-        .defaultValue(true)
-        .build());
+            .name("save-gui-button")
+            .description("Shows a button to save the current GUI state.")
+            .defaultValue(true)
+            .build());
 
     public final Setting<Boolean> closeWithoutPacketButton = sgStateTools.add(new BoolSetting.Builder()
-        .name("force-close-button")
-        .description("Shows a button to close the GUI without sending a server packet.")
-        .defaultValue(true)
-        .build());
+            .name("force-close-button")
+            .description("Shows a button to close the GUI without sending a server packet.")
+            .defaultValue(true)
+            .build());
 
     public final Setting<Boolean> delayUIPackets = sgStateTools.add(new BoolSetting.Builder()
-        .name("delay-packets")
-        .description("Show a button to delay sending UI packets.")
-        .defaultValue(true)
-        .build());
+            .name("delay-packets")
+            .description("Show a button to delay sending UI packets.")
+            .defaultValue(true)
+            .build());
 
     public final Setting<Keybind> restoreGuiKeybind = sgStateTools.add(new KeybindSetting.Builder()
-        .name("restore-gui-keybind")
-        .description("Restores the last saved GUI state.")
-        .defaultValue(Keybind.fromKey(GLFW.GLFW_KEY_V))
-        .build()
+            .name("restore-gui-keybind")
+            .description("Restores the last saved GUI state.")
+            .defaultValue(Keybind.fromKey(GLFW.GLFW_KEY_V))
+            .build()
     );
 
     public final Setting<Boolean> enableChatBox = sgChatBox.add(new BoolSetting.Builder()
-        .name("enable-chat-box")
-        .description("Adds a command input text box to inventory screens.")
-        .defaultValue(true)
-        .build());
+            .name("enable-chat-box")
+            .description("Adds a command input text box to inventory screens.")
+            .defaultValue(true)
+            .build());
 
     public final Setting<Integer> xOffset = sgChatBox.add(new IntSetting.Builder()
-        .name("x-offset")
-        .description("The X offset of the command input box.")
-        .defaultValue(84)
-        .visible(enableChatBox::get)
-        .build()
+            .name("x-offset")
+            .description("The X offset of the command input box.")
+            .defaultValue(84)
+            .visible(enableChatBox::get)
+            .build()
     );
 
     public final Setting<Integer> yOffset = sgChatBox.add(new IntSetting.Builder()
-        .name("y-offset")
-        .description("The Y offset of the command input box from the top of the screen.")
-        .defaultValue(-22)
-        .visible(enableChatBox::get)
-        .build()
+            .name("y-offset")
+            .description("The Y offset of the command input box from the top of the screen.")
+            .defaultValue(-22)
+            .visible(enableChatBox::get)
+            .build()
     );
 
     public final Setting<Integer> width = sgChatBox.add(new IntSetting.Builder()
-        .name("width")
-        .description("The width of the command input box.")
-        .defaultValue(100)
-        .visible(enableChatBox::get)
-        .build()
+            .name("width")
+            .description("The width of the command input box.")
+            .defaultValue(100)
+            .visible(enableChatBox::get)
+            .build()
     );
 
-    @Nullable private Screen storedScreen;
-    @Nullable private ScreenHandler storedScreenHandler;
+    @Nullable
+    private Screen storedScreen;
+    @Nullable
+    private ScreenHandler storedScreenHandler;
 
     public GuiHelper() {
         super(Lanyard.LANYARD_UTILS_CATEGORY, "Gui Helper", "A collection of GUI-related utilities.");

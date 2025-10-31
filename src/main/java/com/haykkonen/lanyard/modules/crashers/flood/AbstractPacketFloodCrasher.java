@@ -20,12 +20,12 @@ public abstract class AbstractPacketFloodCrasher<T extends ServerPlayPacketListe
     protected final SettingGroup sgGeneral = settings.getDefaultGroup();
 
     protected final Setting<Integer> amount = sgGeneral.add(new IntSetting.Builder()
-        .name("amount")
-        .description("The number of packets to send each tick.")
-        .defaultValue(100)
-        .min(1)
-        .sliderMax(50000)
-        .build()
+            .name("amount")
+            .description("The number of packets to send each tick.")
+            .defaultValue(100)
+            .min(1)
+            .sliderMax(50000)
+            .build()
     );
 
     protected AbstractPacketFloodCrasher(@NotNull Category category, @NotNull String name, @NotNull String description) {

@@ -16,13 +16,13 @@ public abstract class AbstractCommandFloodCrasher extends AbstractPacketFloodCra
     private static final int MAX_SPAM_SIZE = 32760;
 
     protected final Setting<Integer> spamSize = sgGeneral.add(new IntSetting.Builder()
-        .name("spam-size")
-        .description("The size of the spam buffer appended to the command.")
-        .defaultValue(256)
-        .min(0)
-        .max(MAX_SPAM_SIZE)
-        .sliderMax(MAX_SPAM_SIZE)
-        .build()
+            .name("spam-size")
+            .description("The size of the spam buffer appended to the command.")
+            .defaultValue(256)
+            .min(0)
+            .max(MAX_SPAM_SIZE)
+            .sliderMax(MAX_SPAM_SIZE)
+            .build()
     );
 
     protected AbstractCommandFloodCrasher(@NotNull Category category, @NotNull String name, @NotNull String description) {
