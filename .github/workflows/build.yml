@@ -34,7 +34,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'latest-dev' }}
-          name: ${{ startsWith(github.ref, 'refs/tags/') && format('Official Release {0}', github.ref_name) || 'Current Development Build' }}
+          name: ${{ startsWith(github.ref, 'refs/tags/') && format('{0}', github.ref_name) || 'Development Build' }}
           prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
           make_latest: ${{ startsWith(github.ref, 'refs/tags/') }}
 
