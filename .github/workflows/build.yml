@@ -6,6 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    if: "! (github.ref_type != 'tag' && contains(github.event.head_commit.message, '[release]'))"
 
     steps:
       - name: Checkout Repository
@@ -32,10 +33,13 @@ jobs:
       - name: Publish Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}-dev', env.VERSION) }}
-          name: ${{ github.ref_type == 'tag' && format('Official Release {0}', github.ref_name) || format('Dev Build {0}', env.VERSION) }}
-          prerelease: ${{ github.ref_type != 'tag' }}
-          make_latest: ${{ github.ref_type == 'tag' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'latest-dev' }}
+          name: ${{ startsWith(github.ref, 'refs/tags/') && format('Official Release {0}', github.ref_name) || 'Current Development Build' }}
+          prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          make_latest: ${{ startsWith(github.ref, 'refs/tags/') }}
+
+
+          generate_release_notes: true
           files: |
             build/libs/*.jar
         env:
