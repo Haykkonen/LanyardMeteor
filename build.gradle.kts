@@ -3,52 +3,65 @@ plugins {
 }
 
 base {
-    archivesName.set(project.property("archives_name") as String)
-    version = project.property("mod_version") as String
-    group = project.property("maven_group") as String
+    archivesName = properties["archives_base_name"] as String
+    version = libs.versions.mod.version.get()
+    group = properties["maven_group"] as String
 }
 
 repositories {
-    maven("https://maven.meteordev.org/releases") { name = "Meteor Releases" }
-    maven("https://maven.meteordev.org/snapshots") { name = "Meteor Snapshots" }
+    maven {
+        name = "meteor-maven"
+        url = uri("https://maven.meteordev.org/releases")
+    }
+    maven {
+        name = "meteor-maven-snapshots"
+        url = uri("https://maven.meteordev.org/snapshots")
+    }
 }
 
 dependencies {
-    minecraft(libs.minecraft.mojang)
-    mappings(libs.yarn.mappings)
+    // Fabric
+    minecraft(libs.minecraft)
+    mappings(variantOf(libs.yarn) { classifier("v2") })
     modImplementation(libs.fabric.loader)
-    modImplementation("meteordevelopment:meteor-client:${libs.versions.minecraft.get()}-SNAPSHOT")
+
+    // Meteor
+    modImplementation(libs.meteor.client)
 }
 
 tasks {
     processResources {
-        val properties = mapOf(
+        val propertyMap = mapOf(
             "version" to project.version,
-            "mc_version" to libs.versions.minecraft.get(),
-            "mod_id" to project.property("mod_id")
+            "mc_version" to libs.versions.minecraft.get()
         )
-        inputs.properties(properties)
+
+        inputs.properties(propertyMap)
+
+        filteringCharset = "UTF-8"
+
         filesMatching("fabric.mod.json") {
-            expand(properties)
+            expand(propertyMap)
         }
     }
 
     jar {
-        val finalArchivesName = base.archivesName.get()
+        inputs.property("archivesName", project.base.archivesName.get())
+
         from("LICENSE") {
-            rename { "${it}_$finalArchivesName" }
+            rename { "${it}_${inputs.properties["archivesName"]}" }
         }
     }
 
     java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(21))
-        }
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.release.set(21)
-        options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:unchecked"))
+        options.release = 21
+        options.compilerArgs.add("-Xlint:deprecation")
+        options.compilerArgs.add("-Xlint:unchecked")
     }
 }

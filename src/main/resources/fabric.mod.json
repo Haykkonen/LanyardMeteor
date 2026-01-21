@@ -11,7 +11,6 @@
     "homepage": "https://github.com/haykkonen/lanyard",
     "sources": "https://github.com/haykkonen/lanyard"
   },
-  "license": "CC0-1.0",
   "icon": "assets/lanyard/icon.png",
   "environment": "client",
   "entrypoints": {
@@ -23,14 +22,16 @@
     "lanyard.mixins.json"
   ],
   "custom": {
-    "meteor-client:color": "225,25,25"
+    "meteor-client:color": "225,25,25",
+    "modmenu": {
+      "parent": {
+        "id": "meteor-client"
+      }
+    }
   },
   "depends": {
     "java": ">=21",
-    "minecraft": [
-      "${mc_version}",
-      "1.21.9"
-    ],
+    "minecraft": ["${mc_version}"],
     "meteor-client": "*"
   }
 }
