@@ -25,17 +25,17 @@ jobs:
         run: |
           VERSION=$(./gradlew properties -q | grep "^version:" | awk '{print $2}')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Release
+      - name: Publish Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.VERSION }}
-          name: Dev Build ${{ env.VERSION }}
-          prerelease: true
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}-dev', env.VERSION) }}
+          name: ${{ github.ref_type == 'tag' && format('Official Release {0}', github.ref_name) || format('Dev Build {0}', env.VERSION) }}
+          prerelease: ${{ github.ref_type != 'tag' }}
+          make_latest: ${{ github.ref_type == 'tag' }}
           files: |
             build/libs/*.jar
         env:
